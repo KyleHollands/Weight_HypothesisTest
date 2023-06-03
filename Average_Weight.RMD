@@ -1,0 +1,140 @@
+---
+title: "Statistical inference with the GSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+```
+
+### Load data
+
+```{r load-data}
+# Import the dataset
+obesity_data <- read.csv("Obesity_Data.csv")
+
+# Identify the character columns
+char_cols <- sapply(obesity_data, is.character)
+
+# Convert character columns to factors for easier analysis
+obesity_data[char_cols] <- lapply(obesity_data[char_cols], as.factor)
+```
+
+* * *
+
+## Part 1: Data
+
+### How are the observations in the sample collected?
+The provided dataset encompasses details regarding the classification of individuals' obesity. It has been compiled from diverse sources, including medical records, surveys, and self-reported data.
+Due to this being an observational study, this analysis can only be used for generalized purposes; no causal connections can be made.
+
+* * *
+
+## Part 2: Research question
+Estimate the true average weight based on this sample using a 95% Confidence Interval.
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+#### Variables being considered
+- Weight
+
+### Investigate the Dataset and Variables
+```{r eda}
+# Weight
+summary(obesity_data$Weight)
+str(obesity_data$Weight)
+hist(obesity_data$Weight)
+boxplot(obesity_data$Weight)
+scatter.smooth(obesity_data$Weight)
+qqnorm(obesity_data$Weight)
+qqline(obesity_data$Weight)
+```
+
+### Data Manipulation and Cleaning
+```{r manip_and_clean}
+# Keep columns for analysis
+weight_data_trimmed <- obesity_data[, c("Weight")]
+
+# Check rows with N/A's and remove if feasible
+(num_rows_with_na <- sum(is.na(weight_data_trimmed)))
+
+# Remove rows with N/As (if necessary)
+weight_data_cleaned <- na.omit(weight_data_trimmed)
+
+# Analyze cleaned data
+str(weight_data_cleaned)
+```
+* * *
+
+## Part 4: Inference
+
+### Conditions
+Conditions for this confidence interval: 
+1. Independence: Sampled observations must be independent. 
+‣ Random sample/assignment
+‣ If sampling without replacement, n < 10% of population
+2. Sample size/skew: n ≥ 30, larger if the population distribution is very skewed.
+
+### Confidence Interval
+
+```{r CI}
+# Calculate Mean
+mean_value <- mean(weight_data_cleaned)
+cat("Mean:", mean_value, "\n")
+
+# Calculate Standard Deviation
+sd_value <- sd(weight_data_cleaned)
+cat("Standard Deviation:", sd_value, "\n")
+
+# Calculate Standard Error
+n <- length(weight_data_cleaned)  # Sample size
+standard_error <- sd(weight_data_cleaned) / sqrt(n)
+cat("Standard Error:", standard_error, "\n")
+
+## Calculate critical t-score
+# Specify the significance level
+alpha <- 0.05
+
+# Specify the degrees of freedom
+df <- n-1
+
+# Acquire the critical t-score
+t_crit <- abs(qt(alpha, df))
+
+# Print the critical t-score
+print(t_crit)
+
+## Calculate the confidence interval manually
+confidence_interval_min <- mean_value - t_crit * standard_error
+confidence_interval_max <- mean_value + t_crit * standard_error
+combined <- paste("  CI:", confidence_interval_min, "-", confidence_interval_max)
+cat(combined)
+
+## Calculate the confidence interval from the t-test
+result <- t.test(weight_data_cleaned)
+
+# Extract confidence interval
+confidence_interval <- result$conf.int
+cat("Confidence Interval:", confidence_interval, "\n")
+
+# Perform t-test
+result <- t.test(weight_data_cleaned, mu = 59)
+
+# Print the test result
+print(result)
+```
+
+We are 95% confident the average weight is between 54 and 65 Kilograms and the p_value
+indicates the true mean is approximately 59.
