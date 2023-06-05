@@ -136,5 +136,6 @@ result <- t.test(weight_data_cleaned, mu = 59)
 print(result)
 ```
 
-We are 95% confident the average weight is between 54 and 65 Kilograms and the p_value
-indicates the true mean is approximately 59.
+We can be 95% confident the average weight is between 54 and 65 Kilograms (provided by the calculated CI). 
+The p-value is well above the significance level of 0.05, therefore we fail to reject the null hypothesis
+in favour of the alternative; indicating the true population Mean is approximately 59.
