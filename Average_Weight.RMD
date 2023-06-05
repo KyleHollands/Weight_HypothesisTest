@@ -122,7 +122,7 @@ confidence_interval_max <- mean_value + t_crit * standard_error
 combined <- paste("  CI:", confidence_interval_min, "-", confidence_interval_max)
 cat(combined)
 
-## Calculate the confidence interval from the t-test
+## Calculate the confidence interval automatically from the t-test
 result <- t.test(weight_data_cleaned)
 
 # Extract confidence interval
@@ -136,6 +136,7 @@ result <- t.test(weight_data_cleaned, mu = 59)
 print(result)
 ```
 
-We can be 95% confident the average weight is between 54 and 65 Kilograms (provided by the calculated CI). 
-The p-value is well above the significance level of 0.05, therefore we fail to reject the null hypothesis
-in favour of the alternative; indicating the true population Mean is approximately 59.
+Based on the calculated confidence interval, we can confidently state that the average weight falls between 54 and 65 
+kilograms with 95% certainty. Additionally, the p-value is greater than the significance level of 0.05, leading us to 
+fail in rejecting the null hypothesis and accept the alternative, which suggests that the true population mean is 
+approximately 59.
